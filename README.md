@@ -1,18 +1,40 @@
 # Tray Snippets
 
-A little Snippets manager for your Desktop Menu Bar/Tray, built using [Electron](http://electron.atom.io).
+A little text Snippets manager, built on ReactJS for:
 
-## Running
+- The web
+- Your desktop menu bar/tray (using [Electron](http://electron.atom.io))
+
+## Install
 
 ```sh
 npm i
-gulp serve
+```
+
+## Running
+
+### In your browser
+
+```sh
+npm start
+```
+
+### OS Menu bar
+
+```sh
+npm run electron-start
 ```
 
 ## Packaging
 
-Coming soon...
+### In your browser
 
 ```sh
-npm run package
+npm run build
+```
+
+### OS Menu bar
+
+```sh
+npm run electron-package
 ```

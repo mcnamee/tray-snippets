@@ -1,7 +1,7 @@
 const {app, BrowserWindow, ipcMain, Tray} = require('electron')
 const path = require('path')
 
-const assetsDirectory = path.join(__dirname, './app')
+const assetsDirectory = path.join(__dirname, './src')
 
 let tray = undefined
 let window = undefined
@@ -25,7 +25,7 @@ app.on('window-all-closed', () => {
  * Create Tray Icon
  */
 const createTray = () => {
-  tray = new Tray(path.join(assetsDirectory, 'images/sunTemplate.png'))
+  tray = new Tray(path.join(assetsDirectory, 'assets/images/sunTemplate.png'))
   tray.on('right-click', toggleWindow)
   tray.on('double-click', toggleWindow)
   tray.on('click', function (event) {
@@ -72,7 +72,13 @@ const createWindow = () => {
       backgroundThrottling: false
     }
   })
-  window.loadURL(`file://${path.join(__dirname, './app/index.html')}`)
+  // window.loadURL(`file://${path.join(__dirname, './build/index.html')}`)
+  const startUrl = process.env.ELECTRON_START_URL || url.format({
+      pathname: path.join(__dirname, '/../build/index.html'),
+      protocol: 'file:',
+      slashes: true
+  });
+  window.loadURL(startUrl)
 
   // Hide the window when it loses focus
   window.on('blur', () => {
