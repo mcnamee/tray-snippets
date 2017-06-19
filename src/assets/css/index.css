@@ -73,6 +73,15 @@ h4 {
 h5 {
 }
 
+a, a:link, a:visited, a:hover {
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+a:active {
+  opacity: 0.75;
+}
+
 /**
   * Header
   */
@@ -123,8 +132,26 @@ h5 {
 }
 
 /**
+  * Sidebar
+  */
+.nav-group-title .icon {
+  float: right;
+}
+
+/**
   * Photon Overrides
   */
 .nav-group-item {
   padding: 2px 10px 2px;
+}
+
+.btn.active {
+  color: #fff;
+  border: 1px solid transparent;
+  background-color: #6d6c6d;
+  background-image: none;
+}
+
+.btn.active .icon {
+  color: #fff;
 }

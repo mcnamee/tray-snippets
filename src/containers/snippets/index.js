@@ -2,8 +2,10 @@ import React from 'react'
 import { push } from 'react-router-redux'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import { getSnippets, addSnippet } from '../../modules/snippets'
+import { getFolders } from '../../modules/folders'
 
 class Snippets extends React.Component {
   constructor(props) {
@@ -11,20 +13,47 @@ class Snippets extends React.Component {
 
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.state = { formData: { title: '', text: '' } }
   }
 
   componentDidMount() {
-    this.props.getSnippets()
+    this.props.getSnippets();
+    this.props.getFolders();
+  }
+
+  renderFolderItem(item, id = '') {
+    return (
+      <Link
+        to={id ? `/snippets/${id}` : '/snippets'}
+        className={'nav-group-item ' + (this.props.location.pathname === `/snippets/${id}` && 'active')}
+        key={id ? id : 'all-snippets'}
+      >
+        <span className="icon icon-record" style={{color: '{item.color}'}}></span>
+        {item.title}
+      </Link>
+    )
+  }
+
+  renderFolderList() {
+    const listItems = [
+      this.renderFolderItem({ title: 'All' })
+    ];
+
+    Object.keys(this.props.folders).forEach((key) => {
+      listItems.push(this.renderFolderItem(this.props.folders[key], key))
+    });
+
+    return listItems
   }
 
   renderListItem(item, id = 123) {
     return (
       <li className="list-group-item" key={id}>
-        <div className="media-body">
-          <strong>{item.title}</strong>
-          <p>{item.text}</p>
-        </div>
+        <Link to={`/view-snippet/${id}`}>
+          <div className="media-body">
+            <strong>{item.title}</strong>
+            <p>{item.text}</p>
+          </div>
+        </Link>
       </li>
     )
   }
@@ -39,38 +68,6 @@ class Snippets extends React.Component {
     return listItems
   }
 
-  renderNewListItem(item) {
-    return (
-      <li className="list-group-item">
-        <div className="media-body">
-          <form onSubmit={this.handleSubmit}>
-            <div className="form-group">
-              <input
-                type="text"
-                name="title"
-                value={this.state.formData.title}
-                className="form-control"
-                placeholder="Title"
-                onChange={this.handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <textarea
-                name="text"
-                className="form-control"
-                placeholder="Snippet"
-                onChange={this.handleChange}
-              >{this.state.formData.password}</textarea>
-            </div>
-
-            <button className="btn btn-default">Add</button>
-          </form>
-        </div>
-      </li>
-    )
-  }
-
   handleChange(e) {
     const data = {};
     data[e.target.name] = e.target.value;
@@ -80,7 +77,7 @@ class Snippets extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    this.props.addSnippet(this.state.formData)
+    // this.props.addSnippet(this.state.formData)
     this.setState({ formData: {} })
   }
 
@@ -90,24 +87,29 @@ class Snippets extends React.Component {
         <div className="pane-group">
           <div className="pane pane-one-fourth sidebar">
             <nav className="nav-group">
-              <h5 className="nav-group-title">Tags</h5>
-              <a className="nav-group-item active">
-                <span className="icon icon-home"></span>
-                Matt
-              </a>
-              <span className="nav-group-item">
-                <span className="icon icon-download"></span>
-                Something else
-              </span>
+              <Link to={'/folders'}>
+                <h5 className="nav-group-title">
+                  Folders
+                  <span className="icon icon-cog"></span>
+                </h5>
+              </Link>
+              {this.renderFolderList()}
             </nav>
-          </div>
+        </div>
 
           <div className="pane">
             <ul className="list-group">
               <li className="list-group-header">
-                <input className="form-control" type="text" placeholder="Search for item" />
+                <form onSubmit={this.handleSubmit}>
+                  <input
+                    type="text"
+                    name="search"
+                    className="form-control"
+                    onChange={this.handleChange}
+                    placeholder="Search for item"
+                  />
+                </form>
               </li>
-              {this.renderNewListItem()}
               {this.renderList()}
             </ul>
           </div>
@@ -118,12 +120,14 @@ class Snippets extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  snippets: state.snippets
+  snippets: state.snippets,
+  folders: state.folders,
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getSnippets,
   addSnippet,
+  getFolders,
 }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Snippets)

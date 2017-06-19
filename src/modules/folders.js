@@ -10,7 +10,7 @@ const initialState = {}
  */
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'REPLACE_SNIPPETS':
+    case 'REPLACE_FOLDERS':
       return action.data
 
     default:
@@ -29,64 +29,62 @@ function currentFirebaseUser() {
   return null;
 }
 
-export function getSnippets() {
+export function getFolders() {
   return (dispatch) => {
     const UID = currentFirebaseUser()
     if (!UID) return false;
 
     return Firebase.database().ref()
-      .child(`snippets/${UID}`).on('value', (snapshot) => {
-        const snippets = snapshot.val() || [];
+      .child(`folders/${UID}`).on('value', (snapshot) => {
+        const folders = snapshot.val() || [];
 
         return dispatch({
-          type: 'REPLACE_SNIPPETS',
-          data: snippets,
+          type: 'REPLACE_FOLDERS',
+          data: folders,
         })
       })
   }
 }
 
-export function addSnippet(formData = {}) {
+export function addFolder(formData = {}) {
   return (dispatch) => {
     const UID = currentFirebaseUser()
     if (!UID) return false;
 
     const newKey = Firebase.database().ref()
-      .child(`snippets/${UID}`).push().key
+      .child(`folders/${UID}`).push().key
 
     return Firebase.database().ref()
-      .child(`snippets/${UID}/${newKey}`).set({
+      .child(`folders/${UID}/${newKey}`).set({
         title: formData.title,
-        text: formData.text,
         added: Firebase.database.ServerValue.TIMESTAMP,
       }).then(() => newKey)
   }
 }
 
-export function updateSnippet(snippetId, formData = {}) {
+export function updateFolder(folderId, formData = {}) {
   return (dispatch) => {
-    if (!snippetId) return false;
+    if (!folderId) return false;
 
     const UID = currentFirebaseUser()
     if (!UID) return false;
 
     return Firebase.database().ref()
-      .child(`snippets/${UID}/${snippetId}`).update({
+      .child(`folders/${UID}/${folderId}`).update({
         title: formData.title,
-        text: formData.text,
         updated: Firebase.database.ServerValue.TIMESTAMP,
       })
   }
 }
 
-export function deleteSnippet(snippetId) {
+export function deleteFolder(folderId) {
   return (dispatch) => {
-    if (!snippetId) return false;
+    if (!folderId) return false;
 
     const UID = currentFirebaseUser()
     if (!UID) return false;
 
     return Firebase.database().ref()
-      .child(`snippets/${UID}/${snippetId}`).set(null);
+      .child(`folders/${UID}/${folderId}`).set(null);
   }
 }
